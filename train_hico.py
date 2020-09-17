@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 """
 Detection Training Script.
@@ -14,6 +15,8 @@ Therefore, we recommend you to use detectron2 as an library and take
 this file as an example of how to use the library.
 You may want to write your own script with your datasets and other customizations.
 """
+from PIL import ImageFile, Image
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 import logging
 import os
@@ -25,8 +28,9 @@ import detectron2.utils.comm as comm
 from detectron2.data import MetadataCatalog, build_detection_train_loader
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch
 from detectron2.utils.events import EventStorage
+from detectron2.data.datasets import register_coco_instances
 from detectron2.evaluation import (
-    CityscapesEvaluator,
+    # CityscapesEvaluator,
     COCOEvaluator,
     COCOPanopticEvaluator,
     DatasetEvaluators,
@@ -138,6 +142,10 @@ class Trainer(DefaultTrainer):
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
         evaluator_list = []
         evaluator_type = MetadataCatalog.get(dataset_name).evaluator_type
+
+        print("==> evaluator_type:", evaluator_type)
+        # exit()
+
         if evaluator_type in ["sem_seg", "coco_panoptic_seg"]:
             evaluator_list.append(
                 SemSegEvaluator(
@@ -152,11 +160,11 @@ class Trainer(DefaultTrainer):
             evaluator_list.append(COCOEvaluator(dataset_name, cfg, True, output_folder))
         if evaluator_type == "coco_panoptic_seg":
             evaluator_list.append(COCOPanopticEvaluator(dataset_name, output_folder))
-        if evaluator_type == "cityscapes":
-            assert (
-                torch.cuda.device_count() >= comm.get_rank()
-            ), "CityscapesEvaluator currently do not work with multiple machines."
-            return CityscapesEvaluator(dataset_name)
+        # if evaluator_type == "cityscapes":
+        #     assert (
+        #         torch.cuda.device_count() >= comm.get_rank()
+        #     ), "CityscapesEvaluator currently do not work with multiple machines."
+        #     return CityscapesEvaluator(dataset_name)
         if evaluator_type == "pascal_voc":
             return PascalVOCDetectionEvaluator(dataset_name)
         if evaluator_type == "lvis":
@@ -196,6 +204,13 @@ def setup(args):
     cfg = get_cfg()
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
+    
+    # regist HICO-Det dataset
+    DATASET_ROOT = '/data01/zzk/data/hico_20160224_det/'
+    register_coco_instances("HICO-det-train", {}, DATASET_ROOT + "hico_annotations_train2015.json", DATASET_ROOT + "images/train2015")
+    register_coco_instances("HICO-det-test",  {}, DATASET_ROOT + "hico_annotations_test2015.json",  DATASET_ROOT + "images/test2015")
+    cfg.DATASETS.TRAIN = ("HICO-det-train",)
+    cfg.DATASETS.TEST  = ("HICO-det-test",)
     cfg.freeze()
     default_setup(cfg, args)
     return cfg

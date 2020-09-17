@@ -578,6 +578,10 @@ class FCOSOutputs(object):
         masks_feat = torch.cat((self.masks, x_map, y_map), dim=1)
         r_h = int(h * self.strides[0])
         r_w = int(w * self.strides[0])
+
+        # seg head
+        mask_loss = 0
+        '''
         targets_masks = [target_im.gt_masks.tensor for target_im in self.gt_instances]
         masks_t = self.prepare_masks(h, w, r_h, r_w, targets_masks)
         mask_loss = masks_feat[0].new_tensor(0.0)
@@ -608,6 +612,7 @@ class FCOSOutputs(object):
             
         if batch_ins > 0:
             mask_loss = mask_loss / batch_ins
+        '''
               
 
         losses = {
