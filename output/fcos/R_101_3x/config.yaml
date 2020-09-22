@@ -308,7 +308,7 @@ MODEL:
     - stage3
     - stage4
     - stage5
-  WEIGHTS: ./output/fcos/R_101_3x/model_0789999.pth
+  WEIGHTS: ./output/fcos/R_101_3x/model_0954999.pth
 OUTPUT_DIR: output/fcos/R_101_3x
 SEED: -1
 SOLVER:
@@ -321,9 +321,9 @@ SOLVER:
     ENABLED: false
     NORM_TYPE: 2.0
   GAMMA: 0.1
-  IMS_PER_BATCH: 6
+  IMS_PER_BATCH: 4
   LR_SCHEDULER_NAME: WarmupMultiStepLR
-  MAX_ITER: 2000000
+  MAX_ITER: 90000
   MOMENTUM: 0.9
   NESTEROV: false
   REFERENCE_WORLD_SIZE: 0

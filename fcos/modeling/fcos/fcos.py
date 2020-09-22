@@ -79,12 +79,12 @@ class FCOS(nn.Module):
 
         if self.training:
             pre_nms_thresh = self.pre_nms_thresh_train
-            pre_nms_topk = self.pre_nms_topk_train
-            post_nms_topk = self.post_nms_topk_train
+            pre_nms_topk   = self.pre_nms_topk_train
+            post_nms_topk  = self.post_nms_topk_train
         else:
             pre_nms_thresh = self.pre_nms_thresh_test
-            pre_nms_topk = self.pre_nms_topk_test
-            post_nms_topk = self.post_nms_topk_test
+            pre_nms_topk   = self.pre_nms_topk_test
+            post_nms_topk  = self.post_nms_topk_test
 
         outputs = FCOSOutputs(
             images,
@@ -142,8 +142,9 @@ class FCOS(nn.Module):
         shift_y = shift_y.reshape(-1)
         locations = torch.stack((shift_x, shift_y), dim=1) + stride // 2
         return locations
-
-
+'''
+CORE CODE
+'''
 class FCOSHead(nn.Module):
     def __init__(self, cfg, input_shape: List[ShapeSpec]):
         """
@@ -231,14 +232,14 @@ class FCOSHead(nn.Module):
         torch.nn.init.constant_(self.cls_logits.bias, bias_value)
 
     def forward(self, x):
-        logits = []
-        bbox_reg = []
-        ctrness = []
+        logits      = []
+        bbox_reg    = []
+        ctrness     = []
         bbox_towers = []
         controllers = []
         for l, feature in enumerate(x):
-            feature = self.share_tower(feature)
-            cls_tower = self.cls_tower(feature)
+            feature    = self.share_tower(feature)
+            cls_tower  = self.cls_tower(feature)
             bbox_tower = self.bbox_tower(feature)
 
             logits.append(self.cls_logits(cls_tower))

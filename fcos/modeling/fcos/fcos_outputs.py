@@ -334,6 +334,7 @@ class FCOSOutputs(object):
             im_idxes
         )
 
+    # testing mode
     def predict_proposals(self):
         sampled_boxes = []
 
@@ -372,7 +373,7 @@ class FCOSOutputs(object):
         masks_feat = torch.cat((self.masks, x_map, y_map), dim=1)
         o_h = int(h * self.strides[0])
         o_w = int(w * self.strides[0])
-        for im in range(N):
+        for im in range(N): # N = Batchsize
             boxlist = boxlists[im]
             input_h, input_w = boxlist.image_size
             mask = masks_feat[None, im]

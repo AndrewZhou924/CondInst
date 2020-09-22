@@ -212,6 +212,7 @@ def setup(args):
     register_coco_instances("HICO-det-test",  {}, DATASET_ROOT + "hico_annotations_test2015.json",  DATASET_ROOT + "images/test2015")
     cfg.DATASETS.TRAIN = ("HICO-det-train",)
     cfg.DATASETS.TEST  = ("HICO-det-test",)
+    
     cfg.freeze()
     default_setup(cfg, args)
     return cfg
